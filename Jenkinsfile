@@ -29,9 +29,22 @@ pipeline {
                       -v /var/run/docker.sock:/var/run/docker.sock \
                       -v trivy_cache:/root/.cache/ \
                       aquasec/trivy:latest image \
+                      --scanners vuln \
                       --severity HIGH,CRITICAL \
-                      --exit-code 0 \
+                      --ignore-unfixed \
                       --no-progress \
+                      --exit-code 0 \
+                      ${IMAGE_NAME}:${BUILD_NUMBER}
+
+                    docker run --rm \
+                      -v /var/run/docker.sock:/var/run/docker.sock \
+                      -v trivy_cache:/root/.cache/ \
+                      aquasec/trivy:latest image \
+                      --scanners vuln \
+                      --severity CRITICAL \
+                      --ignore-unfixed \
+                      --no-progress \
+                      --exit-code 1 \
                       ${IMAGE_NAME}:${BUILD_NUMBER}
                 '''
             }
